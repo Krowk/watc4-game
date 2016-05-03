@@ -9,37 +9,6 @@ import java.util.ArrayList;
 
 public class FileUtils
 {
-
-	/** @param url Path to the map file.
-	 * @return The corresponding <code>Map<code> */
-	public static Map createMap(String url)
-	{
-
-		String[] mapText = readFileAsStringArray(url);
-
-		int info[] = new int[6]; // width, height, lightSpawnX, lightSpawnY, shadowSpawnX and shadowSpawnY
-
-		for (int i = 0; i < info.length; i++)
-		{
-			info[i] = Integer.valueOf(mapText[i].split(" = ")[1]);
-		}
-
-		Map map = new Map(info[0], info[1], info[2], info[3], info[4], info[5]);
-		String[] values; // Tiles values temporarily stored per line from the map file
-
-		for (int i = 0; i < info[0]; i++)
-		{
-			values = mapText[i + 7].split("\t");
-
-			for (int j = 0; i < info[1]; i++)
-			{
-				map.setTileAt(i, j, TileRegistry.getTileFromId(Integer.valueOf(values[j])));
-			}
-		}
-
-		return map;
-	}
-
 	/** @param url Path to the map file.
 	 * @return <b>String[]</b> containing the file line per line. */
 	public static String[] readFileAsStringArray(String url)
@@ -67,14 +36,23 @@ public class FileUtils
 
 			} catch (IOException exception)
 			{
-				System.out.println("Reading error : " + exception.getMessage());
+				System.err.println("Reading error : " + exception.getMessage());
+				exception.printStackTrace();
 			}
 		} catch (FileNotFoundException exception)
 		{
-			System.out.println("File doesn't exists.");
+			System.err.println("File doesn't exists.");
+			exception.printStackTrace();
 		}
 
 		return list.toArray(new String[0]);
 
+	}
+	
+	
+	/** Convert a double into an int */
+	public static int toInt(double f)
+	{
+		return (f - (double) ((int) f) < 0.5) ? (int) f : (int) f + 1;
 	}
 }

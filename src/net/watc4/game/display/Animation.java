@@ -1,13 +1,11 @@
 package net.watc4.game.display;
 
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
-import net.watc4.game.GameObject;
-import net.watc4.game.Main;
+import net.watc4.game.utils.IUpdate;
 
 /** Used to display Sprites. Can contain several Sprites that will cycle over time. */
-public class Animation implements GameObject
+public class Animation implements IUpdate
 {
 	/** Index of the current Sprite to display. */
 	private int currentSprite;
@@ -17,14 +15,6 @@ public class Animation implements GameObject
 	private Sprite[] sprites;
 	/** Number of ticks the current Sprite has been displayed. */
 	private int tick;
-
-	/** Creates a new Animation, with one Sprite.
-	 * 
-	 * @param sprite */
-	public Animation(Sprite sprite)
-	{
-		this(0, sprite);
-	}
 
 	/** Creates a new Animation.
 	 * 
@@ -36,13 +26,21 @@ public class Animation implements GameObject
 		this.currentSprite = 0;
 		this.tick = 0;
 		this.speed = speed;
-		Main.getAnimationManager().registerAnimation(this);
+		this.register();
+	}
+
+	/** Creates a new Animation, with one Sprite.
+	 * 
+	 * @param sprite */
+	public Animation(Sprite sprite)
+	{
+		this(0, sprite);
 	}
 
 	/** Unregisters the Animation from the Animation Manager. Call when you stop using the Animation. */
 	public void dispose()
 	{
-		Main.getAnimationManager().unregisterAnimation(this);
+		AnimationManager.unregisterAnimation(this);
 	}
 
 	/** @return The current Image to display. */
@@ -61,20 +59,18 @@ public class Animation implements GameObject
 		return this.getImage();
 	}
 
-	/** Do not use render(Graphics) on this <code>Animation</code>. Use getImage() and render with the Object using this <code>Animation</code>.
-	 * 
-	 * @see Animation#getImage() */
-	@Override
-	@Deprecated
-	public void render(Graphics g)
-	{}
+	/** Registers this Animation into the AnimationManager. */
+	public void register()
+	{
+		AnimationManager.registerAnimation(this);
+	}
 
 	@Override
 	public void update()
 	{
 		if (this.speed > 0)
 		{
-			this.tick++;
+			++this.tick;
 			if (this.tick >= this.speed) this.next();
 		}
 	}
